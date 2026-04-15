@@ -35,6 +35,7 @@ export default function EditorPage() {
   const [showSnapshots, setShowSnapshots] = useState(false)
   const [activeEditor, setActiveEditor] = useState<TiptapEditor | null>(null)
   const [blueLight, setBlueLight] = useState(false)
+  const [lineWidth, setLineWidth] = useState('max-w-3xl')
 
   const fontMap: Record<string, string> = { serif: 'font-serif', sans: 'font-sans' }
   const sizeMap: Record<string, string> = { sm: 'text-sm', base: 'text-base', lg: 'text-lg' }
@@ -80,7 +81,7 @@ export default function EditorPage() {
   )
 
   return (
-    <div className={`flex h-screen ${fontMap[font]} ${sizeMap[size]} ${blueLight ? 'sepia-[0.25] brightness-[0.97]' : ''}`}>
+    <div className={`flex h-screen bg-white dark:bg-stone-950 ${fontMap[font]} ${sizeMap[size]} ${blueLight ? 'sepia-[0.25] brightness-[0.97]' : ''}`}>
       <Sidebar
         projectId={chapter.project_id}
         chapters={chapters}
@@ -91,13 +92,16 @@ export default function EditorPage() {
 
         <Toolbar
           projectId={chapter.project_id}
+          chapterTitle={chapter.title}
           wordCount={wordCount}
           onFontChange={setFont}
           onSizeChange={setSize}
+          onLineWidthChange={setLineWidth}
           onFindReplace={() => setShowFindReplace(prev => !prev)}
           onSnapshots={() => setShowSnapshots(prev => !prev)}
           onBlueLightChange={setBlueLight}
           isSaving={isSaving}
+          editor={activeEditor}
         />
         {showFindReplace && (
           <FindReplace editor={activeEditor} onClose={() => setShowFindReplace(false)} />
@@ -109,13 +113,14 @@ export default function EditorPage() {
             onClose={() => setShowSnapshots(false)}
           />
         )}
-        <div className="flex-1 overflow-y-auto pt-14 pb-12 bg-stone-50">
+        <div className="flex-1 overflow-y-auto pt-14 pb-12 bg-stone-50 dark:bg-stone-950">
           <Editor
             chapterId={chapterId}
             initialContent={chapter.content}
             onWordCountChange={handleWordCountChange}
             onInitialWordCount={handleInitialWordCount}
             onEditorReady={setActiveEditor}
+            lineWidth={lineWidth}
           />
         </div>
         <GoalTracker sessionWords={sessionWords} totalWords={wordCount} />

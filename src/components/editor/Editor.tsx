@@ -16,6 +16,7 @@ interface EditorProps {
   onWordCountChange: (words: number) => void
   onInitialWordCount: (words: number) => void
   onEditorReady: (editor: TiptapEditor) => void
+  lineWidth: string
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -37,6 +38,7 @@ export default function Editor({
   onWordCountChange,
   onInitialWordCount,
   onEditorReady,
+  lineWidth,
 }: EditorProps) {
   const editor = useEditor({
     immediatelyRender: false,
@@ -51,7 +53,7 @@ export default function Editor({
     content: initialContent || '',
     editorProps: {
       attributes: {
-        class: 'prose max-w-none focus:outline-none min-h-screen py-16 px-8 [&_*]:text-stone-800 [&_p]:leading-8',
+        class: 'prose max-w-none focus:outline-none min-h-screen py-16 px-8 [&_*]:text-stone-800 dark:[&_*]:text-stone-200 [&_p]:leading-8',
       },
     },
     onCreate: ({ editor }) => {
@@ -85,7 +87,7 @@ export default function Editor({
   }, [editor])
 
   return (
-    <div className="w-full max-w-3xl mx-auto">
+    <div className={`${lineWidth} mx-auto`}>
       <EditorContent editor={editor} />
     </div>
   )

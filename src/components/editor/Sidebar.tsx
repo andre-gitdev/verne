@@ -63,9 +63,8 @@ function SortableChapter({
     <div
       ref={setNodeRef}
       style={style}
-      className={`group rounded-lg border p-3 cursor-pointer transition-colors ${
-        isActive ? 'bg-stone-800 border-stone-800' : 'bg-white border-stone-200 hover:border-stone-300'
-      }`}
+      className={`group rounded-lg border p-3 cursor-pointer transition-colors ${isActive ? 'bg-stone-800 border-stone-800' : 'bg-white dark:bg-stone-800 border-stone-200 dark:border-stone-700 hover:border-stone-300'
+        }`}
       onClick={onClick}
     >
       <div className="flex items-center gap-2 mb-2">
@@ -174,9 +173,9 @@ export default function Sidebar({ projectId, chapters, activeChapterId, onChapte
   }
 
   return (
-    <div className="w-64 min-w-64 h-screen bg-stone-50 border-r border-stone-200 flex flex-col">
-      <div className="p-4 border-b border-stone-200 flex items-center justify-between">
-        <span className="text-sm font-medium text-stone-700">Chapters</span>
+    <div className="w-64 min-w-64 h-screen bg-stone-50 dark:bg-stone-900 border-r border-stone-200 dark:border-stone-800 flex flex-col">
+      <div className="p-4 border-b border-stone-200 dark:border-stone-800 flex items-center justify-between">
+        <span className="text-sm font-medium text-stone-700 dark:text-stone-300">Chapters</span>
         <button
           onClick={addChapter}
           className="text-xs px-2 py-1 rounded bg-stone-800 text-white hover:bg-stone-700 transition-colors"

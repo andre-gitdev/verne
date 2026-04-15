@@ -12,7 +12,7 @@ export default function GoalTracker({ sessionWords, totalWords }: GoalTrackerPro
   const progress = Math.min(100, Math.round((sessionWords / dailyGoal) * 100))
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur border-t border-stone-100 px-6 py-2 flex items-center gap-6">
+    <div className="fixed bottom-0 left-64 right-0 bg-white/90 dark:bg-stone-900/90 backdrop-blur border-t border-stone-100 dark:border-stone-800 px-6 py-2 flex items-center gap-6">
       <div className="flex-1 flex items-center gap-3">
         <span className="text-xs text-stone-400 whitespace-nowrap">
           Today: {sessionWords.toLocaleString()} /

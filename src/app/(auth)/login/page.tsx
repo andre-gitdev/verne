@@ -19,7 +19,7 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-stone-50">
+    <div className="min-h-screen flex items-center justify-center bg-stone-50 dark:bg-stone-950">
       <div className="w-full max-w-sm p-8">
         <h1 className="text-2xl font-medium text-stone-800 mb-2">Verne</h1>
         <p className="text-stone-500 text-sm mb-8">Your long-form writing space.</p>
