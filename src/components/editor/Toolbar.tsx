@@ -9,6 +9,7 @@ interface ToolbarProps {
   onSizeChange: (size: string) => void
   onFindReplace: () => void
   onSnapshots: () => void
+  onBlueLightChange: (enabled: boolean) => void
   isSaving: boolean
 }
 
@@ -19,11 +20,13 @@ export default function Toolbar({
   onSizeChange,
   onFindReplace,
   onSnapshots,
+  onBlueLightChange,
   isSaving,
 }: ToolbarProps) {
   const router = useRouter()
   const [font, setFont] = useState('serif')
   const [size, setSize] = useState('base')
+  const [blueLight, setBlueLight] = useState(false)
 
   function handleFont(f: string) {
     setFont(f)
@@ -33,6 +36,12 @@ export default function Toolbar({
   function handleSize(s: string) {
     setSize(s)
     onSizeChange(s)
+  }
+
+  function handleBlueLight() {
+    const next = !blueLight
+    setBlueLight(next)
+    onBlueLightChange(next)
   }
 
   return (
@@ -81,6 +90,17 @@ export default function Toolbar({
           className="px-3 py-1 rounded text-xs text-stone-500 hover:bg-stone-100 transition-colors"
         >
           Snapshots
+        </button>
+        <button
+          onClick={handleBlueLight}
+          title="Toggle blue light filter"
+          className={`px-3 py-1 rounded text-xs transition-colors ${
+            blueLight
+              ? 'bg-amber-100 text-amber-700 hover:bg-amber-200'
+              : 'text-stone-500 hover:bg-stone-100'
+          }`}
+        >
+          {blueLight ? 'Warm on' : 'Warm off'}
         </button>
       </div>
       <div className="flex items-center gap-4 text-xs text-stone-400">

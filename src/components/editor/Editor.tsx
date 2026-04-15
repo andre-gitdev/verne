@@ -51,7 +51,7 @@ export default function Editor({
     content: initialContent || '',
     editorProps: {
       attributes: {
-        class: 'prose prose-stone max-w-none focus:outline-none min-h-screen py-16 px-8',
+        class: 'prose max-w-none focus:outline-none min-h-screen py-16 px-8 [&_*]:text-stone-800 [&_p]:leading-8',
       },
     },
     onCreate: ({ editor }) => {

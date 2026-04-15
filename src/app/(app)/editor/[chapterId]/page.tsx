@@ -34,6 +34,7 @@ export default function EditorPage() {
   const [showFindReplace, setShowFindReplace] = useState(false)
   const [showSnapshots, setShowSnapshots] = useState(false)
   const [activeEditor, setActiveEditor] = useState<TiptapEditor | null>(null)
+  const [blueLight, setBlueLight] = useState(false)
 
   const fontMap: Record<string, string> = { serif: 'font-serif', sans: 'font-sans' }
   const sizeMap: Record<string, string> = { sm: 'text-sm', base: 'text-base', lg: 'text-lg' }
@@ -79,7 +80,7 @@ export default function EditorPage() {
   )
 
   return (
-    <div className={`flex h-screen ${fontMap[font]} ${sizeMap[size]}`}>
+    <div className={`flex h-screen ${fontMap[font]} ${sizeMap[size]} ${blueLight ? 'sepia-[0.25] brightness-[0.97]' : ''}`}>
       <Sidebar
         projectId={chapter.project_id}
         chapters={chapters}
@@ -87,6 +88,7 @@ export default function EditorPage() {
         onChaptersChange={setChapters}
       />
       <div className="flex-1 flex flex-col min-w-0 relative">
+
         <Toolbar
           projectId={chapter.project_id}
           wordCount={wordCount}
@@ -94,6 +96,7 @@ export default function EditorPage() {
           onSizeChange={setSize}
           onFindReplace={() => setShowFindReplace(prev => !prev)}
           onSnapshots={() => setShowSnapshots(prev => !prev)}
+          onBlueLightChange={setBlueLight}
           isSaving={isSaving}
         />
         {showFindReplace && (
