@@ -34,7 +34,6 @@ export default function EditorPage() {
   const [showFindReplace, setShowFindReplace] = useState(false)
   const [showSnapshots, setShowSnapshots] = useState(false)
   const [activeEditor, setActiveEditor] = useState<TiptapEditor | null>(null)
-  const initialWordCount = useRef<number | null>(null)
 
   const fontMap: Record<string, string> = { serif: 'font-serif', sans: 'font-sans' }
   const sizeMap: Record<string, string> = { sm: 'text-sm', base: 'text-base', lg: 'text-lg' }
@@ -60,10 +59,17 @@ export default function EditorPage() {
     load()
   }, [chapterId, router])
 
-  function handleWordCountChange(words: number) {
-    if (initialWordCount.current === null) initialWordCount.current = words
+  function handleInitialWordCount(words: number) {
     setWordCount(words)
-    setSessionWords(Math.max(0, words - initialWordCount.current))
+    setSessionWords(0)
+  }
+
+  function handleWordCountChange(words: number) {
+    setWordCount(words)
+    setSessionWords(prev => {
+      const session = words - wordCount
+      return Math.max(0, prev + session)
+    })
   }
 
   if (!chapter) return (
@@ -105,6 +111,7 @@ export default function EditorPage() {
             chapterId={chapterId}
             initialContent={chapter.content}
             onWordCountChange={handleWordCountChange}
+            onInitialWordCount={handleInitialWordCount}
             onEditorReady={setActiveEditor}
           />
         </div>

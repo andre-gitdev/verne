@@ -39,7 +39,7 @@ export default function Toolbar({
     <div className="fixed top-0 left-64 right-0 z-10 flex items-center justify-between px-6 py-3 bg-white/90 backdrop-blur border-b border-stone-100">
       <div className="flex items-center gap-4">
         <button
-          onClick={() => router.push(`/dashboard/${projectId}`)}
+          onClick={() => router.push('/dashboard')}
           className="text-xs text-stone-400 hover:text-stone-600 transition-colors"
         >
           ← Back

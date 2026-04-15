@@ -1,5 +1,4 @@
 'use client'
-import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import {
   DndContext,
@@ -93,11 +92,11 @@ function SortableChapter({
           <option value="revised">Revised</option>
           <option value="final">Final</option>
         </select>
-        <span className={`text-xs ${isActive ? 'text-stone-400' : 'text-stone-400'}`}>
+        <span className="text-xs text-stone-400">
           {chapter.word_count.toLocaleString()}w
         </span>
       </div>
-      {chapter.word_count_target && (
+      {progress !== null && (
         <div className="ml-5 mt-2" onClick={e => e.stopPropagation()}>
           <div className="h-1 bg-stone-100 rounded-full overflow-hidden">
             <div
@@ -105,7 +104,9 @@ function SortableChapter({
               style={{ width: `${progress}%` }}
             />
           </div>
-          <span className="text-xs text-stone-400 mt-0.5 block">{progress}% of {chapter.word_count_target.toLocaleString()} target</span>
+          <span className="text-xs text-stone-400 mt-0.5 block">
+            {progress}% of {chapter.word_count_target!.toLocaleString()} target
+          </span>
         </div>
       )}
       <div className="ml-5 mt-2" onClick={e => e.stopPropagation()}>
@@ -126,16 +127,14 @@ function SortableChapter({
 
 export default function Sidebar({ projectId, chapters, activeChapterId, onChaptersChange }: SidebarProps) {
   const router = useRouter()
-  const [items, setItems] = useState(chapters)
   const sensors = useSensors(useSensor(PointerSensor))
 
   async function handleDragEnd(event: DragEndEvent) {
     const { active, over } = event
     if (!over || active.id === over.id) return
-    const oldIndex = items.findIndex(c => c.id === active.id)
-    const newIndex = items.findIndex(c => c.id === over.id)
-    const reordered = arrayMove(items, oldIndex, newIndex).map((c, i) => ({ ...c, position: i }))
-    setItems(reordered)
+    const oldIndex = chapters.findIndex(c => c.id === active.id)
+    const newIndex = chapters.findIndex(c => c.id === over.id)
+    const reordered = arrayMove(chapters, oldIndex, newIndex).map((c, i) => ({ ...c, position: i }))
     onChaptersChange(reordered)
     await Promise.all(
       reordered.map(c => supabase.from('chapters').update({ position: c.position }).eq('id', c.id))
@@ -143,25 +142,33 @@ export default function Sidebar({ projectId, chapters, activeChapterId, onChapte
   }
 
   async function handleStatusChange(id: string, status: Chapter['status']) {
-    setItems(prev => prev.map(c => c.id === id ? { ...c, status } : c))
+    onChaptersChange(chapters.map(c => c.id === id ? { ...c, status } : c))
     await supabase.from('chapters').update({ status }).eq('id', id)
   }
 
   async function handleTargetChange(id: string, target: number) {
-    setItems(prev => prev.map(c => c.id === id ? { ...c, word_count_target: target } : c))
+    onChaptersChange(chapters.map(c => c.id === id ? { ...c, word_count_target: target } : c))
     await supabase.from('chapters').update({ word_count_target: target }).eq('id', id)
   }
 
   async function addChapter() {
-    const position = items.length
-    const { data } = await supabase
+    const position = chapters.length
+    const { data, error } = await supabase
       .from('chapters')
       .insert({ project_id: projectId, title: `Chapter ${position + 1}`, position })
       .select()
       .single()
+    if (error) { console.error('Insert error:', error); return }
     if (data) {
-      const newChapter = { ...data, word_count: 0, word_count_target: null }
-      setItems(prev => [...prev, newChapter])
+      const newChapter: Chapter = {
+        id: data.id,
+        title: data.title,
+        status: 'draft',
+        word_count: 0,
+        word_count_target: null,
+        position,
+      }
+      onChaptersChange([...chapters, newChapter])
       router.push(`/editor/${data.id}`)
     }
   }
@@ -179,8 +186,8 @@ export default function Sidebar({ projectId, chapters, activeChapterId, onChapte
       </div>
       <div className="flex-1 overflow-y-auto p-3 flex flex-col gap-2">
         <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-          <SortableContext items={items.map(c => c.id)} strategy={verticalListSortingStrategy}>
-            {items.map(chapter => (
+          <SortableContext items={chapters.map(c => c.id)} strategy={verticalListSortingStrategy}>
+            {chapters.map(chapter => (
               <SortableChapter
                 key={chapter.id}
                 chapter={chapter}

@@ -14,6 +14,7 @@ interface EditorProps {
   chapterId: string
   initialContent: object | null
   onWordCountChange: (words: number) => void
+  onInitialWordCount: (words: number) => void
   onEditorReady: (editor: TiptapEditor) => void
 }
 
@@ -26,41 +27,45 @@ function debounce<T extends (...args: any[]) => void>(fn: T, ms: number) {
   }
 }
 
+function countWords(text: string) {
+  return text.trim() === '' ? 0 : text.trim().split(/\s+/).length
+}
+
 export default function Editor({
   chapterId,
   initialContent,
   onWordCountChange,
+  onInitialWordCount,
   onEditorReady,
 }: EditorProps) {
-  const sessionStartWords = useRef<number | null>(null)
-
   const editor = useEditor({
-  immediatelyRender: false,
-  extensions: [
-    StarterKit,
-    Typography,
-    Placeholder.configure({ placeholder: 'Begin writing…' }),
-    CharacterCount,
-    TextStyle,
-    FontFamily,
-  ],
-  content: initialContent || '',
-  editorProps: {
-    attributes: {
-      class: 'prose prose-stone max-w-none focus:outline-none min-h-screen py-16 px-8',
+    immediatelyRender: false,
+    extensions: [
+      StarterKit,
+      Typography,
+      Placeholder.configure({ placeholder: 'Begin writing…' }),
+      CharacterCount,
+      TextStyle,
+      FontFamily,
+    ],
+    content: initialContent || '',
+    editorProps: {
+      attributes: {
+        class: 'prose prose-stone max-w-none focus:outline-none min-h-screen py-16 px-8',
+      },
     },
-  },
-  onUpdate: ({ editor }) => {
-    const text = editor.getText()
-    const words = text.trim() === '' ? 0 : text.trim().split(/\s+/).length
-    if (sessionStartWords.current === null) sessionStartWords.current = words
-    onWordCountChange(words)
-    debouncedSave(editor.getJSON(), words)
-  },
-  onCreate: ({ editor }) => {
-    onEditorReady(editor)
-  },
-})
+    onCreate: ({ editor }) => {
+      const words = countWords(editor.getText())
+      onInitialWordCount(words)
+      onWordCountChange(words)
+      onEditorReady(editor)
+    },
+    onUpdate: ({ editor }) => {
+      const words = countWords(editor.getText())
+      onWordCountChange(words)
+      debouncedSave(editor.getJSON(), words)
+    },
+  })
 
   const debouncedSave = useRef(
     debounce(async (content: object, wordCount: number) => {
